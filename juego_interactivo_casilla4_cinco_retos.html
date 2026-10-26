@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Juego interactivo: Familia y escuela</title>
+<style>
+:root{--pink:#ec5d91;--blue:#dff4ff;--yellow:#ffe17a;--ink:#203052;--green:#2f9564}
+*{box-sizing:border-box}
+body{margin:0;padding:18px;background:linear-gradient(135deg,#fff0f6,#e8f7ff);font-family:Arial,sans-serif;color:var(--ink);min-height:100vh;display:grid;place-items:center}
+.card{width:min(800px,100%);background:#fff;border-radius:26px;overflow:hidden;box-shadow:0 12px 38px #1e36501c}
+header{background:var(--pink);color:#fff;text-align:center;padding:25px 18px}
+header h1{margin:0;font-size:clamp(1.5rem,4vw,2.25rem)}
+header p{margin:9px 0 0}
+main{padding:clamp(18px,4vw,34px)}
+.tag{display:inline-block;border-radius:20px;background:var(--yellow);padding:8px 13px;font-weight:bold;font-size:.9rem}
+h2{font-size:clamp(1.25rem,3vw,1.7rem);line-height:1.35}
+.instructions{line-height:1.6}
+.option{display:block;width:100%;text-align:left;margin:10px 0;padding:15px;border:2px solid #d7e9f4;border-radius:14px;background:#f8fcff;color:var(--ink);font-size:1rem;cursor:pointer}
+.option:hover{border-color:#70bde2}
+.option:disabled{cursor:default}
+.option.correct{background:#e7f8ed;border-color:var(--green)}
+.option.wrong{background:#fff0f4;border-color:var(--pink)}
+.feedback{display:none;padding:14px;border-radius:13px;line-height:1.5;margin-top:14px}
+.feedback.show{display:block}.good{background:#e7f8ed}.try{background:#fff0f4}
+button.primary{background:var(--ink);color:white;border:0;padding:13px 19px;border-radius:13px;font-weight:bold;font-size:1rem;cursor:pointer}
+button.secondary{background:#fff;border:2px solid #d7e9f4;padding:11px 16px;border-radius:13px;cursor:pointer;font-weight:bold}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.progress{height:9px;background:#e9eef7;border-radius:9px;margin:0 0 18px;overflow:hidden}
+.bar{height:100%;background:var(--green);transition:width .2s}
+.small{font-size:.92rem;color:#5b6780;line-height:1.5}
+footer{text-align:center;padding:0 15px 22px;color:#68738a;font-size:.85rem}
+.center{text-align:center}.emoji{font-size:3rem}
+</style>
+</head>
+<body>
+<div class="card">
+<header><h1>Juntos decidimos:<br>familia-escuela</h1><p>Juego interactivo · ¡Cuidar, acompañar y transformar! 🌈📚</p></header>
+<main id="app">
+<span class="tag">CASILLA 4 · CINCO RETOS</span>
+<h2>¡Bienvenidos al juego!</h2>
+<p class="instructions"><b>Objetivo:</b> reconocer cómo la colaboración entre las familias y los docentes contribuye al bienestar, el aprendizaje, las capacidades y la continuidad educativa de niñas, niños y adolescentes.</p>
+<p><b>Participantes:</b> familias, docentes y comunidad educativa.</p>
+<p class="instructions"><b>¿Cómo se juega?</b> Lee cada situación y elige la respuesta que consideres más adecuada. Recibirás una explicación después de responder. Cada respuesta acertada suma un punto. ¡Consigue cinco puntos para obtener la insignia simbólica de <b>“Equipo que acompaña y transforma”</b>!</p>
+<p class="small">Selecciona una respuesta en cada reto. Puedes volver a jugar al terminar.</p>
+<div class="actions"><button class="primary" onclick="begin()">Comenzar los retos</button></div>
+</main>
+<footer>Actividad educativa · Alianza entre familia, escuela y comunidad</footer>
+</div>
+<script>
+const qs=[
+{title:"RETO 1: EL NIÑO NECESITA APOYO",q:"Un niño está teniendo dificultades para aprender y se siente desanimado. ¿Qué deberían hacer la familia y la docente?",opts:["Dejar que resuelva solo sus dificultades.","Dialogar, identificar sus necesidades y acordar estrategias de apoyo.","Culpar al niño por no aprender."],c:1,ex:"La comunicación entre la familia y la docente permite acompañar el aprendizaje y buscar estrategias acordes con las necesidades del niño."},
+{title:"RETO 2: CUIDAR LAS EMOCIONES",q:"Una niña llega triste a la escuela y no quiere participar en las actividades. ¿Qué es lo más adecuado?",opts:["Ignorarla para que se le pase.","Regañarla delante de sus compañeros.","Escucharla, brindarle confianza y comunicarse con su familia cuando sea necesario."],c:2,ex:"Cuidar también significa ofrecer seguridad emocional, buen trato y confianza."},
+{title:"RETO 3: ACOMPAÑAR EL APRENDIZAJE",q:"La docente propone una actividad de lectura y desea que la familia participe desde casa. ¿Cuál sería una buena acción?",opts:["Invitar a la familia a leer cuentos con el niño y conversar sobre ellos.","Pedir que la familia realice todas las tareas por el niño.","Dejar toda la responsabilidad del aprendizaje a la escuela."],c:0,ex:"La familia puede acompañar los aprendizajes mediante experiencias cotidianas y afectivas."},
+{title:"RETO 4: RECONOCER LAS CAPACIDADES",q:"Un niño demuestra mucho interés por la música, pero casi nunca tiene oportunidades para expresarlo. ¿Qué pueden hacer la familia y la escuela?",opts:["Decirle que debe concentrarse únicamente en las materias.","Crear oportunidades para que explore, cante, experimente y comparta su talento.","Compararlo con otros niños."],c:1,ex:"Promover las capacidades implica reconocer los intereses de cada niño y ofrecerle oportunidades para desarrollarlos."},
+{title:"RETO 5: EVITAR LA INTERRUPCIÓN ESCOLAR",q:"Una familia está teniendo dificultades para que su hija asista regularmente a la escuela. ¿Qué deberían hacer los docentes?",opts:["Sancionar inmediatamente a la niña.","Dialogar con la familia, comprender las dificultades y buscar alternativas para favorecer su continuidad educativa.","Esperar a que la familia solucione sola el problema."],c:1,ex:"La alianza familia-escuela permite identificar barreras y coordinar apoyos para proteger la trayectoria educativa."}
+];
+let i=0,score=0,answered=false;
+function begin(){i=0;score=0;showQ()}
+function showQ(){answered=false;let q=qs[i];document.getElementById("app").innerHTML=`<div class="progress"><div class="bar" style="width:${i/qs.length*100}%"></div></div><span class="tag">RETO ${i+1} DE 5</span><h2>${q.title}</h2><p>${q.q}</p><div>${q.opts.map((x,j)=>`<button class="option" onclick="answer(${j})">${String.fromCharCode(65+j)}. ${x}</button>`).join("")}</div><div id="fb" class="feedback" role="status"></div><div class="actions"><button id="next" class="primary" style="display:none" onclick="nextQ()">${i===4?"Ver resultado":"Siguiente reto →"}</button></div><p class="small">Puntuación actual: ${score} / 5</p>`}
+function answer(n){if(answered)return;answered=true;let q=qs[i],bs=[...document.querySelectorAll(".option")];bs.forEach((b,j)=>{b.disabled=true;if(j===q.c)b.classList.add("correct");if(j===n&&n!==q.c)b.classList.add("wrong")});let f=document.getElementById("fb");if(n===q.c){score++;f.className="feedback show good";f.innerHTML="¡Respuesta correcta! 🎉 "+q.ex}else{f.className="feedback show try";f.innerHTML="Esta vez no. La respuesta correcta es <b>"+String.fromCharCode(65+q.c)+". "+q.opts[q.c]+"</b><br>"+q.ex}document.getElementById("next").style.display="inline-block";document.querySelector("#app .small").textContent="Puntuación actual: "+score+" / 5"}
+function nextQ(){i++;if(i<qs.length)showQ();else finish()}
+function finish(){let won=score===5;document.getElementById("app").innerHTML=`<div class="center"><div class="emoji">${won?"🏅":"🌟"}</div><span class="tag">JUEGO TERMINADO</span><h2>Tu resultado: ${score} de 5 puntos</h2><p>${won?"¡Felicitaciones! Ganaste la insignia simbólica:":"¡Gracias por participar! "}${won?"<br><b>Equipo que acompaña y transforma</b>":"Repasa las explicaciones y vuelve a intentarlo para alcanzar los cinco puntos."}</p><hr style="border:0;border-top:1px solid #e5edf5;margin:22px 0"><h3>Pregunta para conversar</h3><p><b>¿Por qué es importante que la familia y la escuela trabajen juntas?</b></p><p class="small">Porque pueden compartir información, comprender las necesidades de cada niño y coordinar apoyos para favorecer su bienestar, aprendizaje y continuidad educativa.</p><div class="actions" style="justify-content:center"><button class="primary" onclick="begin()">Jugar de nuevo</button></div></div>`}
+</script>
+</body>
+</html>
